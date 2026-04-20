@@ -1,6 +1,7 @@
 package com.example.leandro.crud_client.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,26 +17,46 @@ public class ClientService {
 	private ClientRepository clientRepository;
 	
 	
-	public Client findById(Long id) {
-		return null;
+	public ClientDTO findById(Long id) {
+		Optional<Client> client = clientRepository.findById(id);
+		ClientDTO dto = new ClientDTO(client.get());
+		return dto;
 	}
 	
-	
-	public List<Client> findAll(){
-		return null;
+	public List<ClientDTO> findAll(){
+		List<Client> result = clientRepository.findAll();
+		return result.stream().map(x -> new ClientDTO(x)).toList();
 	}
 	
-	public void insert(ClientDTO entity) {
-		
+	public ClientDTO insert(ClientDTO dto) {
+		// cria um novo client
+		Client client = new Client();
+		// seta o client com os dados do dto que veio
+		copyDtoToClient(dto, client);
+		// salva no banco
+		client = clientRepository.save(client);
+		// retorna o client convertido para dto
+		return new ClientDTO(client);
 	}
 	
-	public void update(Long id, ClientDTO dto) {
-		
+	public ClientDTO update(Long id, ClientDTO dto) {
+		Client client = new Client(findById(id));
+		copyDtoToClient(dto, client);
+		client = clientRepository.save(client);
+		return new ClientDTO(client);
 	}
 	
 	public void delete(Long id) {
-		
+		clientRepository.deleteById(id);
 	}
 	
-	
+	// dto -> client
+	public void copyDtoToClient(ClientDTO dto, Client entity) {
+		entity.setName(dto.getName());
+		entity.setCpf(dto.getCpf());
+		entity.setIncome(dto.getIncome());
+		entity.setBirthDate(dto.getBirthDate());
+		entity.setChildren(dto.getChildren());
+	}
+		
 }

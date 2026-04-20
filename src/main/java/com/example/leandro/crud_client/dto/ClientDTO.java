@@ -2,6 +2,8 @@ package com.example.leandro.crud_client.dto;
 
 import java.time.LocalDate;
 
+import com.example.leandro.crud_client.entities.Client;
+
 public class ClientDTO {
 	
 	private Long id;
@@ -13,6 +15,16 @@ public class ClientDTO {
 	
 	public ClientDTO() {
 		
+	}
+	
+	// Client to ClientDTO
+	public ClientDTO(Client client) {
+		this.id = client.getId();
+		this.name = client.getName();
+		this.cpf = client.getCpf();
+		this.income = client.getIncome();
+		this.birthDate = client.getBirthDate();
+		this.children = client.getChildren();
 	}
 	
 	public ClientDTO(Long id, String name, String cpf, Double income, LocalDate birthDate, Integer children) {

@@ -3,6 +3,8 @@ package com.example.leandro.crud_client.entities;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.example.leandro.crud_client.dto.ClientDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,16 @@ public class Client {
 	
 	public Client() {
 	
+	}
+	
+	// ClientDTo to Client
+	public Client(ClientDTO dto) {
+		this.id = dto.getId();
+		this.name = dto.getName();
+		this.cpf = dto.getCpf();
+		this.income = dto.getIncome();
+		this.birthDate = dto.getBirthDate();
+		this.children = dto.getChildren();
 	}
 	
 	public Client(Long id, String name, String cpf, Double income, LocalDate birthDate, Integer children) {	

@@ -5,13 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.leandro.crud_client.dto.ClientDTO;
-import com.example.leandro.crud_client.entities.Client;
 import com.example.leandro.crud_client.services.ClientService;
 
 
@@ -24,27 +25,30 @@ public class ClientController {
 	
 	
 	@GetMapping(value = "/{id}")
-	public Client findById(Long id) {
-		return null;
+	public ClientDTO findById(@PathVariable Long id) {
+		ClientDTO dto =  clientService.findById(id);
+		return dto;
 	}
 	
 	@GetMapping
-	public List<Client> findAll(){
-		return null;
+	public List<ClientDTO> findAll(){
+		List<ClientDTO> list = clientService.findAll();
+		return list;
 	}
 	
 	@PostMapping
-	public void insert(ClientDTO entity) {
-		
+	public ClientDTO insert(@RequestBody ClientDTO dto) {
+		dto = clientService.insert(dto);
+		return dto;
 	}
 	
 	@PutMapping(value = "/{id}")
-	public void update(Long id, ClientDTO dto) {
-		
+	public ClientDTO update(@PathVariable Long id, @RequestBody ClientDTO dto) {
+		return clientService.update(id, dto);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public void delete(Long id) {
-		
+	public void delete(@PathVariable Long id) {
+		clientService.delete(id);
 	}
 }

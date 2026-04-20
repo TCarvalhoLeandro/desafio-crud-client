@@ -4,10 +4,13 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.leandro.crud_client.dto.CustomError;
+import com.example.leandro.crud_client.dto.ValidationError;
 import com.example.leandro.crud_client.services.exceptions.ResourceNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +19,21 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ControllerExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<CustomError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request){
-		HttpStatus status = HttpStatus.UNPROCESSABLE_CONTENT;
+	public ResponseEntity<CustomError> resourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request){
+		HttpStatus status = HttpStatus.NOT_FOUND;
 		CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(status).body(error);
+	}
+		
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<CustomError> fieldValidation(MethodArgumentNotValidException e, HttpServletRequest request){
+		HttpStatus status = HttpStatus.UNPROCESSABLE_CONTENT;
+		ValidationError error = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+		
+		for(FieldError f: e.getBindingResult().getFieldErrors()) {
+			error.addError(f.getField(), f.getDefaultMessage());
+		}
+		
 		return ResponseEntity.status(status).body(error);
 	}
 }

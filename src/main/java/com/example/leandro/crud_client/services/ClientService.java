@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.leandro.crud_client.dto.ClientDTO;
 import com.example.leandro.crud_client.entities.Client;
@@ -16,18 +18,20 @@ public class ClientService {
 	@Autowired
 	private ClientRepository clientRepository;
 	
-	
+	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> client = clientRepository.findById(id);
 		ClientDTO dto = new ClientDTO(client.get());
 		return dto;
 	}
 	
+	@Transactional(readOnly = true)
 	public List<ClientDTO> findAll(){
 		List<Client> result = clientRepository.findAll();
 		return result.stream().map(x -> new ClientDTO(x)).toList();
 	}
 	
+	@Transactional
 	public ClientDTO insert(ClientDTO dto) {
 		// cria um novo client
 		Client client = new Client();
@@ -39,6 +43,7 @@ public class ClientService {
 		return new ClientDTO(client);
 	}
 	
+	@Transactional
 	public ClientDTO update(Long id, ClientDTO dto) {
 		Client client = new Client(findById(id));
 		copyDtoToClient(dto, client);
@@ -46,6 +51,7 @@ public class ClientService {
 		return new ClientDTO(client);
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public void delete(Long id) {
 		clientRepository.deleteById(id);
 	}

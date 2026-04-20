@@ -1,7 +1,6 @@
 package com.example.leandro.crud_client.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.leandro.crud_client.dto.ClientDTO;
 import com.example.leandro.crud_client.entities.Client;
 import com.example.leandro.crud_client.repositories.ClientRepository;
+import com.example.leandro.crud_client.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ClientService {
@@ -20,8 +22,8 @@ public class ClientService {
 	
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
-		Optional<Client> client = clientRepository.findById(id);
-		ClientDTO dto = new ClientDTO(client.get());
+		Client client = clientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found."));
+		ClientDTO dto = new ClientDTO(client);
 		return dto;
 	}
 	
@@ -45,14 +47,23 @@ public class ClientService {
 	
 	@Transactional
 	public ClientDTO update(Long id, ClientDTO dto) {
-		Client client = new Client(findById(id));
-		copyDtoToClient(dto, client);
-		client = clientRepository.save(client);
-		return new ClientDTO(client);
+		try {
+
+			Client client = clientRepository.getReferenceById(id);
+			copyDtoToClient(dto, client);
+			client = clientRepository.save(client);
+			return new ClientDTO(client);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Resource not found.");
+		}
 	}
 	
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public void delete(Long id) {
+		if(!clientRepository.existsById(id)) {
+			throw new ResourceNotFoundException("Resource not found.");
+		}
 		clientRepository.deleteById(id);
 	}
 	

@@ -21,6 +21,7 @@ public class Client {
 	private Double income;
 	private LocalDate birthDate;
 	private Integer children;
+	
 	public Client() {
 	
 	}

@@ -4,13 +4,23 @@ import java.time.LocalDate;
 
 import com.example.leandro.crud_client.entities.Client;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
+
 public class ClientDTO {
 	
 	private Long id;
+	
+	@NotBlank(message = "Campo não pode ser vazio.")
 	private String name;
 	private String cpf;
 	private Double income;
+	
+	@PastOrPresent(message = "Data nascimento inválida.")
 	private LocalDate birthDate;
+	
+	@PositiveOrZero(message = "Valor inválido.")
 	private Integer children;
 	
 	public ClientDTO() {
